@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Spieleliste</ion-title>
+    <ion-buttons end>
+    <button ion-button icon-only (click)="OpenDotMenu()">
+      <ion-icon name="add"></ion-icon>
+    </button>
+  </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-card *ngFor="let game of games">
+      <h1>{{ game.GameName }}</h1>
+      <ion-label>Min. Spieler: {{game.MinimumPlayers}}</ion-label>      
+    </ion-card>
+  </ion-list>
+  
+</ion-content>

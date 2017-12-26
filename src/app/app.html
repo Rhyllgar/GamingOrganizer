@@ -7,8 +7,16 @@
 
   <ion-content>
     <ion-list>
-      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
+      <div *ngFor="let p of pages">
+      <button menuClose ion-item *ngIf="isAuthenticated && !p.signin" (click)="openPage(p)">
         {{p.title}}
+      </button>      
+      <button menuClose ion-item  *ngIf="!isAuthenticated && p.signin" (click)="openPage(p)">
+          {{p.title}}
+        </button>
+    </div>
+    <button menuClose ion-item *ngIf="isAuthenticated" (click)="onLogout()">
+      Abmelden
       </button>
     </ion-list>
   </ion-content>
