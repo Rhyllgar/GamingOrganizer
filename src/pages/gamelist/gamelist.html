@@ -5,19 +5,63 @@
     </button>
     <ion-title>Spieleliste</ion-title>
     <ion-buttons end>
-    <button ion-button icon-only (click)="OpenDotMenu()">
-      <ion-icon name="add"></ion-icon>
-    </button>
-  </ion-buttons>
+      <button ion-button icon-only (click)="AddGame()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+      <button ion-button icon-only (click)="SyncData()">
+        <ion-icon name="sync"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="background-grey">
   <ion-list>
-    <ion-card *ngFor="let game of games">
-      <h1>{{ game.GameName }}</h1>
-      <ion-label>Min. Spieler: {{game.MinimumPlayers}}</ion-label>      
+    <ion-card  *ngFor="let game of games" (click)="OpenGame(game)">
+
+      <ion-grid>
+
+        <!-- left side: image -->
+        <ion-row>
+          <ion-col col-4>
+            <img [src]="game.Image1"  />
+          </ion-col>
+
+          <!-- left side: text -->
+          <ion-col col-8>
+              <h1> {{ game.GameName }}</h1>
+            <ion-row>
+              <ion-col col-6>
+                Min. Spieler: {{game.MinimumPlayers}}
+              </ion-col>
+              <ion-col col-6>
+                Min. Dauer: {{game.MinimumDuration}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col col-6>
+                Max. Spieler: {{game.MaximumPlayers}}
+              </ion-col>
+              <ion-col col-6>
+                Max. Dauer: {{game.MaximumDuration}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col col-6>
+                Spieltyp: {{game.GameType}}
+              </ion-col>
+              <!-- <ion-col col-6>
+                Gehört: {{game.Owner}}
+              </ion-col> -->
+            </ion-row>
+            <ion-row>
+              {{game.Description}}
+            </ion-row>
+          </ion-col>
+        </ion-row>
+
+      </ion-grid>
     </ion-card>
   </ion-list>
-  
+
 </ion-content>

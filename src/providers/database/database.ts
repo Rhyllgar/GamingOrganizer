@@ -8,26 +8,30 @@ import { Storage } from '@ionic/storage';
 export class DatabaseProvider {
 
     db: SQLiteObject;
-    maxGameId: number = 0;
+    maxGameId: number;
+    allGames: GameModel[] = [];
+    gameIdCounter: number = 0;
 
     constructor(public sqlLite: SQLite, private storage: Storage) {
-        // this.InitializeDatabase();
+        this.storage.get("MaxGameId").then((data) => {
+            if (data != null) {
+                this.maxGameId = data;
+            }
+            else {
+                this.maxGameId = 0;
+            }
+        })
     }
-
-
-    /*
-        Storage / JSON-Objekt - wie machen?
-        
-    */
 
     SaveGame(game: GameModel, isNew: boolean) {
         if (isNew) {
-            this.storage.get("MaxGameId").then((data) => {
-                this.maxGameId = data + 1;
-                this.storage.set("MaxGameId", this.maxGameId).then(() => {
-                    this.SaveGameToDatabase(game, this.maxGameId);
-                });
-            })
+            // this.storage.get("MaxGameId").then((data) => {
+            // this.maxGameId = data;
+            this.maxGameId++;
+            this.storage.set("MaxGameId", this.maxGameId).then(() => {
+                this.SaveGameToDatabase(game, this.maxGameId);
+            });
+            // })
         }
         else {
             this.LoadAllGames
@@ -38,7 +42,7 @@ export class DatabaseProvider {
 
     SaveGameToDatabase(game: GameModel, id: number) {
 
-        this.storage.set("Game" + this.maxGameId, {
+        return this.storage.set("Game" + this.maxGameId, {
             GameID: this.maxGameId,
             GameName: game.GameName,
             MinimumPlayers: game.MinimumPlayers,
@@ -56,56 +60,89 @@ export class DatabaseProvider {
             Deleted: game.Deleted
         });
     }
-    LoadAllGames() {
-        this.storage.get("MaxGameId").then((data) => {
-            if (data != null) {
-                this.maxGameId = data;
-            }
-            let allGames: GameModel[] = [];
-            for (let i = 0; i < this.maxGameId; i++) {
-                let newModel = this.LoadGameById(i);
-                if (newModel != null) {
-                    if (!newModel.Deleted)
-                    {
-                        allGames.push(newModel);
+    async LoadAllGames() {
+        // this.storage.get("MaxGameId").then((data) => {
+        let allGames: GameModel[] = [];
+        for (let i = 1; i <= this.maxGameId; i++) {
+            let newModel = await this.LoadGameById(i).then((newGameModel) => {
+                if (newGameModel != null) {
+                    if (!newGameModel.Deleted) {
+                        allGames.push(newGameModel);
                     }
                 }
-            }
-            return allGames;
+            });
+
+        }
+        return allGames;
+        // });
+
+    }
+
+    // LoadAllGames():Promise<any>{
+    //     return new Promise((resolve) => {
+    //         let test1 = 1;
+    //         this.storage.get("MaxGameId").then((data) => {
+    //             let test2 = 1;
+    //             this.LoadAllGamesRecursive(data).then((allGames) => {
+    //                 let test3 = 1;
+    //                 resolve(allGames);
+    //             })
+    //         });            
+    //     });
+    // }
+
+    // LoadAllGamesRecursive(maxGameId): Promise<any> {
+    //     return new Promise((resolve) => {
+    //         if (this.gameIdCounter <= maxGameId) {
+    //             let newModel = this.LoadGameById(this.gameIdCounter).then((newGameModel) => {
+    //                 if (newGameModel != null) {
+    //                     if (!newGameModel.Deleted) {
+    //                         this.allGames.push(newGameModel);
+    //                         this.gameIdCounter++;
+    //                         return this.LoadAllGamesRecursive(maxGameId);
+    //                     }
+    //                 }
+    //             });
+    //         }
+    //         else {
+    //             this.gameIdCounter = 0;
+    //             resolve(this.allGames);
+    //         }
+    //     });
+    // }
+
+
+    LoadGameById(id: number): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.storage.get("Game" + id).then((data) => {
+                let game = this.MapDataToModel(data);
+                resolve(game);
+            }).catch(e => {
+                reject(Error("LoadGameByID failed"));
+            });
         });
 
     }
 
-    LoadGameById(id: number): any {
-        this.storage.get("Game" + id).then((data) => {
-            if (data.Deleted) {
-                return null;
-            }
-            else {
-                return this.MapDataToModel(data);
-            }
-        }).catch(e => { console.log(e) });
-    }
-
     MapDataToModel(data: any) {
         let newModel = new GameModel();
-        newModel.GameID = data.GameID;
-        newModel.GameName = data.GameName;
-        newModel.MinimumPlayers = data.MinimumPlayers;
-        newModel.MaximumPlayers = data.MaximumPlayers;
-        newModel.GameType = data.GameType;
-        newModel.MinimumDuration = data.MinimumDuration;
-        newModel.MaximumDuration = data.MaximumDuration;
-        newModel.Owner = data.Owner;
-        newModel.Image1 = data.Image1;
-        newModel.Image2 = data.Image2;
-        newModel.Image3 = data.Image3;
-        newModel.Image4 = data.Image4;
-        newModel.Image5 = data.Image5;
-        newModel.Description = data.Description;
-        if (data.deleted)
-        { newModel.Deleted = data.Deleted; }
-
+        if (data != null) {
+            newModel.GameID = data.GameID;
+            newModel.GameName = data.GameName;
+            newModel.MinimumPlayers = data.MinimumPlayers;
+            newModel.MaximumPlayers = data.MaximumPlayers;
+            newModel.GameType = data.GameType;
+            newModel.MinimumDuration = data.MinimumDuration;
+            newModel.MaximumDuration = data.MaximumDuration;
+            newModel.Owner = data.Owner;
+            newModel.Image1 = data.Image1;
+            newModel.Image2 = data.Image2;
+            newModel.Image3 = data.Image3;
+            newModel.Image4 = data.Image4;
+            newModel.Image5 = data.Image5;
+            newModel.Description = data.Description;
+            newModel.Deleted = data.Deleted;
+        }
         return newModel;
     }
 

@@ -28,9 +28,9 @@
             <ion-item>
                 <ion-label fixed>Spieltyp:</ion-label>
                 <ion-select [(ngModel)]="GameType" name="GameType">
-                    <ion-option value="vs">versus</ion-option>
-                    <ion-option value="coop">kooperativ</ion-option>
-                    <ion-option value="semi-coop">semi-koop</ion-option>
+                    <ion-option value="Versus" selected>Versus</ion-option>
+                    <ion-option value="Kooperativ">Kooperativ</ion-option>
+                    <ion-option value="Semi-kooperativ">Semi-kooperativ</ion-option>
                 </ion-select>
             </ion-item>
             <ion-item>
@@ -45,7 +45,31 @@
                 <ion-label fixed>Besitzer:</ion-label>
                 <ion-input type="text" ngModel name="Owner"></ion-input>
             </ion-item>
+            <ion-item>
+                    <ion-label fixed>Beschreibung:</ion-label>
+                    <ion-input type="text" ngModel name="Description"></ion-input>
+                </ion-item>
             <!-- TODO: Screenshots hochladen/auswählen -->
+            <ion-item>
+                    <ion-label fixed>Image1-URL:</ion-label>
+                    <ion-input type="text" ngModel name="Image1"></ion-input>
+                </ion-item>
+            <ion-item>
+                <ion-label fixed>Image1-URL:</ion-label>
+                <ion-input type="text" ngModel name="Image2"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label fixed>Image1-URL:</ion-label>
+                <ion-input type="text" ngModel name="Image3"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label fixed>Image1-URL:</ion-label>
+                <ion-input type="text" ngModel name="Image4"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label fixed>Image1-URL:</ion-label>
+                <ion-input type="text" ngModel name="Image5"></ion-input>
+            </ion-item>
         </ion-list>
         <button ion-button round type="submit" [disabled]="!f.valid">
             Speichern

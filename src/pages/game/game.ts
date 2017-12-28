@@ -18,6 +18,7 @@ export class GamePage {
     tabTitle: string = "Neues Spiel";
     gameType: any = "vs";
     LoadGamesInParent: any;
+    GameType: string = "Versus";
 
     constructor(public navControl: NavController, public navParams: NavParams, public viewCtrl: ViewController, private alertCtrl: AlertController, private gameService: GameService) {
         

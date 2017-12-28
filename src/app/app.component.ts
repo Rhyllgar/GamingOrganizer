@@ -7,13 +7,13 @@ import firebase from 'firebase';
 
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
-import { ListPage} from '../pages/list/list';
-import { SchedulingPage} from '../pages/scheduling/scheduling';
-import { GameListPage} from '../pages/gamelist/gamelist';
-import { GamePage} from '../pages/game/game';
-import { PlayerProfilePage} from '../pages/playerprofile/playerprofile';
-import { SigninPage} from '../pages/signin/signin';
-import { SignupPage} from '../pages/signup/signup';
+import { ListPage } from '../pages/list/list';
+import { SchedulingPage } from '../pages/scheduling/scheduling';
+import { GameListPage } from '../pages/gamelist/gamelist';
+import { GamePage } from '../pages/game/game';
+import { PlayerProfilePage } from '../pages/playerprofile/playerprofile';
+import { SigninPage } from '../pages/signin/signin';
+import { SignupPage } from '../pages/signup/signup';
 
 
 @Component({
@@ -25,22 +25,25 @@ export class MyApp {
   rootPage: any = SigninPage;
   tabsPage: any = TabsPage;
   signinPage: any = SigninPage
-  pages: Array<{title: string, component: any, signin: boolean}>;
+  pages: Array<{ title: string, component: any, signin: boolean }>;
   isAuthenticated = false;
 
   constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen,
-  private authService: AuthService) {
+    private authService: AuthService) {
     firebase.initializeApp({
       apiKey: "AIzaSyDphkCcTArygVPZAoWpmgH8-oeA0engUv4",
-      authDomain: "gamingorganizer-53efc.firebaseapp.com"
+      authDomain: "gamingorganizer-53efc.firebaseapp.com",
+      databaseURL: "https://gamingorganizer-53efc.firebaseio.com",
+      projectId: "gamingorganizer-53efc",
+      storageBucket: "gamingorganizer-53efc.appspot.com"
     });
-    
+
     this.initializeApp();
     // used for an example of ngFor and navigation -- sidemenu
     this.pages = [
       { title: 'Dashboard', component: HomePage, signin: false },  // 0
       { title: 'List', component: ListPage, signin: false },
-      { title: 'Terminfindung', component: SchedulingPage, signin: false  },
+      { title: 'Terminfindung', component: SchedulingPage, signin: false },
       { title: 'Spieleliste', component: GameListPage, signin: false },
       { title: 'Profil', component: PlayerProfilePage, signin: false },
       { title: 'Login', component: SigninPage, signin: true }, // 5
@@ -53,7 +56,7 @@ export class MyApp {
         this.isAuthenticated = true;
         this.nav.setRoot(this.tabsPage);
       }
-      else{
+      else {
         this.isAuthenticated = false;
         this.nav.setRoot(this.signinPage);
       }
@@ -75,7 +78,7 @@ export class MyApp {
     this.nav.setRoot(page.component);
   }
 
-  onLogout(){
+  onLogout() {
     this.authService.logOut();
   }
 }

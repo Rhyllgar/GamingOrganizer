@@ -13,11 +13,9 @@ export class GameModel {
     public Image3: any;
     public Image4: any;
     public Image5: any;
-    public Description: string;
+    public Description: string = "lala";
     public Deleted: boolean
 
-    constructor(
-
-    ) 
+    constructor() 
     { }
 }

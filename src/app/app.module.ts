@@ -1,3 +1,4 @@
+
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
@@ -21,6 +22,7 @@ import { HttpClientModule } from '@angular/common/http'
 import { IonicStorageModule } from '@ionic/storage';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { DatabaseProvider } from './../providers/database/database';
+import { SyncProvider } from './../providers/sync/sync';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -66,7 +68,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     GameService,
     AuthService,
     SQLite,
-    DatabaseProvider 
+    DatabaseProvider, 
+    SyncProvider
   ]
 })
 export class AppModule {}
