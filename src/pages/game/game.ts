@@ -31,32 +31,34 @@ export class GamePage {
 
     CloseGame() {
 
-        if (this.wasChanged) {
-            let yesNoDialog = this.alertCtrl.create({
-                title: 'Vorm Schließen speichern?',
-                message: 'Änderungen wurden noch nicht gespeichert. Jetzt speichern?',
-                buttons: [{
-                    text: "Jo, mach mal",
-                    handler: () => {
-                        this.SaveGame(null);
-                    }
-                },
-                {
-                    text: 'Nee, lass ma',
-                    handler: () => {
-                        this.viewCtrl.dismiss();
-                    }
-                },
-                {
-                    text: 'Abbrechen',
-                    handler: () => { return; }
-                }]
-            });
-            yesNoDialog.present();
-        }
-        else {
-            this.viewCtrl.dismiss();
-        }
+        // if (this.wasChanged) {
+        //     let yesNoDialog = this.alertCtrl.create({
+        //         title: 'Vorm Schließen speichern?',
+        //         message: 'Änderungen wurden noch nicht gespeichert. Jetzt speichern?',
+        //         buttons: [{
+        //             text: "Jo, mach mal",
+        //             handler: () => {
+        //                 this.SaveGame(null);
+        //             }
+        //         },
+        //         {
+        //             text: 'Nee, lass ma',
+        //             handler: () => {
+        //                 this.viewCtrl.dismiss();
+        //             }
+        //         },
+        //         {
+        //             text: 'Abbrechen',
+        //             handler: () => { return; }
+        //         }]
+        //     });
+        //     yesNoDialog.present();
+        // }
+        // else {
+        //     this.viewCtrl.dismiss();
+        // }
+
+        this.viewCtrl.dismiss();
     }
 
     OnSubmit(form: NgForm) {
@@ -86,7 +88,7 @@ export class GamePage {
             gameModel.Image5 = form.value.Image5; 
             gameModel.Description = form.value.Description;
             gameModel.Deleted = false;
-            this.gameService.AddGame(gameModel);            
+            this.gameService.AddGame(gameModel, false);            
         }
         this.LoadGamesInParent();
         form.reset();

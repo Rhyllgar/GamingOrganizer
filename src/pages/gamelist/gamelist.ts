@@ -37,9 +37,16 @@ export class GameListPage {
     console.log(game);
   }
 
-  SyncData(){
-    this.syncProvider.SyncGameData(this.games);
+  UploadGameData(){
+    this.syncProvider.UploadGameData(this.games);
+  }
+  
     
+    DownloadGameData(){
+      this.syncProvider.DownloadGameData().then(() => {
+        this.LoadGames();
+      });
+
     // TODO: a) Woanders hintun und b) Bildschirm geht auf und man kann Dinge einstellen
   }
 }

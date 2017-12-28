@@ -10,18 +10,18 @@ export class GameService {
     }
     private games: GameModel[] = [];
 
-    AddGame(game: GameModel) {
-        // console.log("Addieren ---- Vorher: " + this.games);
-        // console.log(this.games);
-        // this.games.push(game);
-        // console.log("Nachher: " + this.games);
-
-        this.database.SaveGame(game, true);
+    public AddGame(game: GameModel) :Promise<any>{
+        return new Promise((resolve) => {
+            this.database.SaveGame(game, true).then(() => {
+                resolve();
+            });
+        })        
     }
 
     EditGame(game: GameModel) {
         this.database.SaveGame(game, false);
     }
+    
     DeleteGame(game: GameModel) {
         console.log("Löschen ---- Vorher: " + this.games);
         let deleteIndex = this.games.indexOf(game);
@@ -39,8 +39,13 @@ export class GameService {
         })
     }
 
-    SetGamesExternally(games:GameModel[]){
-        
+    ResetMaxGameId(): Promise<any>{
+        return new Promise((resolve) => {
+            this.database.ResetMaxGameId().then(() => { 
+                resolve();
+            });
+        })
     }
+
 
 }

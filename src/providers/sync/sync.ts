@@ -13,28 +13,30 @@ export class SyncProvider {
 
     }
 
-    SyncGameData(games: GameModel[]) {
-        // 0. check authentication
-        this.authService.getActiveUser().getToken().then((token: string) => {
+    SyncGameData(games: GameModel[]): Promise<any> {
 
+        return new Promise((resolve) => {
+            // 0. check authentication
+            this.authService.getActiveUser().getToken().then((token: string) => {
+
+            })
+                .catch()
+            //1. Upload Data
+            this.UploadGameData(games);
+
+            // ToDo: Upload nur mit Admin-Rechten und Frage, ob Daten überschrieben werden sollen!
+
+            //2. Download Data
+            this.DownloadGameData();
         })
-            .catch()
-        //1. Upload Data
-        this.UploadGameData(games);
-
-
-        // ToDo: Upload nur mit Admin-Rechten und Frage, ob Daten überschrieben werden sollen!
-
-        //2. Download Data
-        this.DownloadGameData();
     }
 
-    UploadGameData(games: GameModel[]): Promise<any> {
+    public UploadGameData(games: GameModel[]): Promise<any> {
         var database = firebase.database();
 
         return new Promise((resolve) => {
             this.storage.get("MaxGameId").then((data) => {
-                firebase.database().ref('games/MaxGameId').set({
+                firebase.database().ref('single-values').set({
                     MaxGameId: data
                 })
             }).then(() => {
@@ -64,37 +66,40 @@ export class SyncProvider {
 
     }
 
-    async DownloadGameData() {
-        let allGames: GameModel[] = [];
-        let database = firebase.database();
-        let maxGameId = 0;
-        // get maxGameId so we know how often we have to iterate
-        database.ref('games/MaxGamesId').once('value').then((maxGameIdFromServer) => {
-            maxGameId = maxGameIdFromServer;
-
-            // now download all game data
-            for (let i = 0; i < maxGameId; i++) {
-                let newModel = await this.GetSingleGameById(i).then((newGameModel) => {
-                    if (newGameModel != null) {
-                        if (!newGameModel.Deleted) {
-                            allGames.push(newGameModel);
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-
-
-    GetSingleGameById(id: number): Promise<any> {
+    DownloadGameData(): Promise<any> {
         return new Promise((resolve) => {
-            firebase.database().ref('games/' + id).once('value').then((data) => {
-                let game = this.MapDataToModel(data);
-                resolve(game);
+            let allGames: GameModel[] = [];
+            let database = firebase.database();
+            let maxGameId = 0;
+            // get maxGameId so we know how often we have to iterate
+            database.ref('single-values/MaxGameId').once('value').then((maxGameIdFromServer) => {
+                maxGameId = maxGameIdFromServer.val();
+
+                // now download all game data
+                database.ref('games').once('value').then((snapshot) => {
+                    let allGamesFromServer = snapshot.val();
+                    console.log(allGamesFromServer);
+                    this.gameService.ResetMaxGameId().then( async () => {
+                        for (let game of allGamesFromServer) {
+                            if (game == null) {  // the first entry is empty since gameIds start with 1, so we have to skip it
+                                continue;
+                            }
+                            let newModel: GameModel = this.MapDataToModel(game);
+                            await this.gameService.AddGame(newModel);
+                        }
+                        resolve();
+                        // for (let i = 1; i <= maxGameId; i++) {
+                        //     let newModel: GameModel = this.MapDataToModel(allGamesFromServer[i]);
+                        //     let waitHelper = await this.gameService.AddGame(newModel);
+                        // }
+                    });
+
+                });
             });
         });
+
     }
+
 
     MapDataToModel(data: any) {
         let newModel = new GameModel();
@@ -116,5 +121,6 @@ export class SyncProvider {
             newModel.Deleted = data.Deleted;
         }
 
-
+        return newModel;
     }
+}
