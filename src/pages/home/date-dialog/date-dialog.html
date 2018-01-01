@@ -1,0 +1,36 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            Neuer Spieletermin
+        </ion-title>
+        <ion-buttons end>
+            <button ion-button (click)="Dismiss()">
+                Schließen
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+
+<ion-content>
+    <form #f="ngForm" (ngSubmit)="OnSubmit(f)">
+        <ion-list>
+            <ion-item>
+                <ion-label fixed>Datum:</ion-label>
+                <ion-datetime displayFormat="MMM DD, YYYY" pickerFormat="MMM DD YYYY" ngModel name="PlayDate" required> </ion-datetime>
+            </ion-item>
+            <ion-item>
+                <ion-label fixed>Uhrzeit:</ion-label>
+                <ion-datetime displayFormat="HH:mm" pickerFormat="HH:mm" ngModel name="PlayTime" required> </ion-datetime>
+            </ion-item>
+            <ion-item>
+                <ion-label fixed>Ort:</ion-label>
+                <ion-input type="text" ngModel name="PlayLocation"></ion-input>
+            </ion-item>
+        </ion-list>
+        <button ion-button round type="submit" [disabled]="!f.valid">
+            Termin speichern
+        </button>
+    </form>
+
+</ion-content>

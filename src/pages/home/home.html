@@ -4,28 +4,30 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title>Home</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="NewDate()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
- <ion-card>
-   <ion-card-header>
-     Nächster Termin
-   </ion-card-header>
-   <ion-list>
-    <button ion-item>
-      Wo:
-    </button>
-    <button ion-item>
-      Wann:
-    </button>
-    <button ion-item>
-      Zusagen:
-    </button>
-    <button ion-item>
-      Spiele:
-    </button>
-    
-   </ion-list>
- </ion-card>
+  <ion-card *ngFor="let date of AllDates">
+    <ion-card-header>
+      <b>{{ date.TheDateHtml }} um {{ date.TheTime }}</b>
+    </ion-card-header>
+    <ion-list>
+      <button ion-item>
+        Wo: {{ date.TheLocation }}
+      </button>
+      <button ion-item>
+        Zusagen:
+      </button>
+      <button ion-item>
+        Spiele:
+      </button>
+
+    </ion-list>
+  </ion-card>
 </ion-content>
