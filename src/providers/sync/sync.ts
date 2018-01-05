@@ -1,3 +1,4 @@
+import { DateModel } from './../../models/date-model';
 import { AuthService } from './../../services/auth';
 import { GameModel } from './../../models/game-model';
 import { GameService } from './../../services/game-service';
@@ -100,7 +101,6 @@ export class SyncProvider {
 
     }
 
-
     MapDataToModel(data: any) {
         let newModel = new GameModel();
         if (data != null) {
@@ -123,4 +123,32 @@ export class SyncProvider {
 
         return newModel;
     }
+
+    // ---------------------- DATE SYNCHRONISIERUNG -------------------------
+
+    UploadDates(dates: DateModel[]){
+        new Promise((resolve) => {
+            firebase.database().ref("AllDates").set(dates).then(() => {
+                resolve();
+            });
+        })        
+    }
+
+    DownloadDates(): Promise<any>{
+        return new Promise((resolve) => {
+            firebase.database().ref("AllDates").once('value').then((dates) => {
+                if (dates != null)
+                {
+                this.storage.set("AllDates", dates.val()).then(() => {
+                    resolve();
+                });
+            }
+            else
+            {
+                resolve();
+            }
+            })
+        })
+    }
+
 }

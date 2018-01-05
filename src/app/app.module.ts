@@ -1,3 +1,4 @@
+import { DatePicker } from '@ionic-native/date-picker';
 
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
@@ -14,8 +15,9 @@ import { SchedulingPage } from '../pages/scheduling/scheduling';
 import { SignupPage } from '../pages/signup/signup';
 import { SigninPage } from '../pages/signin/signin';
 import { PopoverMenu } from '../components/popover-menu/popover-menu';
+import { DateDialog } from './../pages/home/date-dialog/date-dialog';
 
-import { GameService} from '../services/game-service'
+import { GameService } from '../services/game-service'
 import { AuthService } from '../services/auth';
 import { HttpClientModule } from '@angular/common/http'
 
@@ -39,13 +41,20 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     SignupPage,
     SigninPage,
     GamePage,
-    PopoverMenu
+    PopoverMenu,
+    DateDialog
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp),
+    IonicModule.forRoot(MyApp, {
+      // monthNames: ['Januar', '"Februar', 'Maerz', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+      // monthShortNames: ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+      // dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag' ],
+      // dayShortNames: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa' ]
+    }),
     IonicStorageModule.forRoot(),
-    HttpClientModule
+    HttpClientModule,
+
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -59,17 +68,19 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     SignupPage,
     SigninPage,
     GamePage,
-    PopoverMenu
+    PopoverMenu,
+    DateDialog
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
     GameService,
     AuthService,
     SQLite,
-    DatabaseProvider, 
-    SyncProvider
+    DatabaseProvider,
+    SyncProvider,
+    DatePicker
   ]
 })
-export class AppModule {}
+export class AppModule { }

@@ -1,8 +1,16 @@
+import { DateModel } from './../../models/date-model';
 
 import { GameModel } from './../../models/game-model';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
+
+/*
+    Kurzer Überblick:
+    - Spiele werden relativ kompliziert geholt: MaxGameId => alle Spiele einzeln holen
+    - Termine (dates) werden leichter geholt: Ein AllDates[]-Array, das als einziges Objekt gespeichert wird. 
+*/
+
 
 @Injectable()
 export class DatabaseProvider {
@@ -11,6 +19,7 @@ export class DatabaseProvider {
     maxGameId: number;
     allGames: GameModel[] = [];
     gameIdCounter: number = 0;
+    allDates: DateModel[] = [];
 
     constructor(public sqlLite: SQLite, private storage: Storage) {
         this.CheckMaxGameId();
@@ -46,7 +55,7 @@ export class DatabaseProvider {
                 this.LoadAllGames
             }
         })
-        this.storage.get("Game" + this.maxGameId).then((data) => { console.log(data) });
+        // this.storage.get("Game" + this.maxGameId).then((data) => { console.log(data) });
     }
 
     SaveGameToDatabase(game: GameModel, id: number) {
@@ -88,7 +97,6 @@ export class DatabaseProvider {
 
     }
 
-
     LoadGameById(id: number): Promise<any> {
         return new Promise((resolve, reject) => {
             this.storage.get("Game" + id).then((data) => {
@@ -123,13 +131,57 @@ export class DatabaseProvider {
         return newModel;
     }
 
-    ResetMaxGameId(): Promise<any>{
+    ResetMaxGameId(): Promise<any> {
         return new Promise((resolve) => {
             this.maxGameId = 0;
             this.storage.set("MaxGameId", this.maxGameId)
-            .then(() => { 
-                resolve();
+                .then(() => {
+                    resolve();
+                });
+        })
+    }
+
+
+    // TO DO:
+    // Checken, ob Termine abgelaufen sind, und wenn ja: aus dem Storage löschen
+    // ACHTUNG: serverseitig darf das nur 1 x passieren, das dürfen die Clients nicht machen!
+    // Alternative: Alle Dates werden synchronisiert, aber der Client sortiert, welche angezeigt werden
+    // Vorteil davon: vergangene Dates können noch angesehen werden, z. B. um zu sehen, welche Spiele gespielt wurden
+
+    SaveDate(date: DateModel): Promise<any> {
+        return new Promise((resolve, reject) => {
+            if (date != null){
+                this.allDates.push(date);
+                this.storage.set("AllDates", this.allDates).then(() => {
+                    resolve();
+                });
+            }
+            else
+            {
+                reject();
+            }
+        })
+    }
+
+    LoadAllDates(): Promise<any>{
+        return new Promise((resolve) => {
+            this.storage.get("AllDates").then((data) => {
+                if (data != null)
+                {
+                    let sortedDates: DateModel[] = data;
+                    sortedDates.sort(function (a, b) {
+                        let firstDate = +new Date(a.TheDate + ":" + a.TheTime);
+                        let secondDate = +new Date(b.TheDate + ":" + b.TheTime);
+                        return firstDate - secondDate;
+                    })
+                    this.allDates = data as DateModel[];
+                    let checker = this.allDates[0].TheDateHtml;
+                    resolve(this.allDates);
+                }
             });
         })
     }
+
+
+
 }

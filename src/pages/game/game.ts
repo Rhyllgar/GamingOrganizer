@@ -88,7 +88,7 @@ export class GamePage {
             gameModel.Image5 = form.value.Image5; 
             gameModel.Description = form.value.Description;
             gameModel.Deleted = false;
-            this.gameService.AddGame(gameModel, false);            
+            this.gameService.AddGame(gameModel);            
         }
         this.LoadGamesInParent();
         form.reset();

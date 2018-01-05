@@ -11,7 +11,7 @@ import {GamePage} from '../game/game'
 })
 export class GameListPage {
 
-  games: GameModel[] = []
+  AllGames: GameModel[] = []
 
   constructor(public navCtrl: NavController, private modelController: ModalController, private gameService: GameService, public viewCtrl: ViewController, private syncProvider: SyncProvider) {
     //this.LoadGames();
@@ -29,7 +29,7 @@ export class GameListPage {
 
   LoadGames(){
      this.gameService.GetGames().then((games) => { 
-       this.games = games;
+       this.AllGames = games;
      });
   }
 
@@ -38,7 +38,7 @@ export class GameListPage {
   }
 
   UploadGameData(){
-    this.syncProvider.UploadGameData(this.games);
+    this.syncProvider.UploadGameData(this.AllGames);
   }
   
     

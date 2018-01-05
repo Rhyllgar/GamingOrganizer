@@ -1,5 +1,9 @@
+import { SyncProvider } from './../../providers/sync/sync';
+import { DatabaseProvider } from './../../providers/database/database';
+import { DateModel } from './../../models/date-model';
+import { DateDialog } from './date-dialog/date-dialog';
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, ModalController } from 'ionic-angular';
 
 @Component({
   selector: 'page-home',
@@ -7,10 +11,38 @@ import { NavController } from 'ionic-angular';
 })
 export class HomePage {
 
-  constructor(public navCtrl: NavController) {
+  public AllDates: DateModel[] = []
 
+  constructor(public navCtrl: NavController, private modalCtrl:ModalController, private databaseProvider:DatabaseProvider, private syncProvider:SyncProvider) {
+    this.LoadDates()
   }
 
+  NewDate(){
+    let newDateDialog = this.modalCtrl.create(DateDialog);
+    newDateDialog.present();
+    newDateDialog.onDidDismiss(() => {
+      this.LoadDates();
+    });
+  }
+
+  LoadDates() {
+    this.databaseProvider.LoadAllDates().then((data) => {
+      this.AllDates = data;
+      console.log(data)
+    })
+  }
+
+  SyncDates(){
+    this.syncProvider.DownloadDates().then(() => {
+      this.LoadDates();
+    })
+  }
+
+  UploadDates(){
+    // ToDo: Checken, ob Berechtigung vorhanden ist
+
+    this.syncProvider.UploadDates(this.AllDates);
+  }
 }
 
 
