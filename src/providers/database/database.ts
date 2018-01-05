@@ -141,6 +141,13 @@ export class DatabaseProvider {
         })
     }
 
+
+    // TO DO:
+    // Checken, ob Termine abgelaufen sind, und wenn ja: aus dem Storage löschen
+    // ACHTUNG: serverseitig darf das nur 1 x passieren, das dürfen die Clients nicht machen!
+    // Alternative: Alle Dates werden synchronisiert, aber der Client sortiert, welche angezeigt werden
+    // Vorteil davon: vergangene Dates können noch angesehen werden, z. B. um zu sehen, welche Spiele gespielt wurden
+
     SaveDate(date: DateModel): Promise<any> {
         return new Promise((resolve, reject) => {
             if (date != null){
@@ -174,5 +181,7 @@ export class DatabaseProvider {
             });
         })
     }
+
+
 
 }

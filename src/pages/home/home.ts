@@ -1,3 +1,4 @@
+import { SyncProvider } from './../../providers/sync/sync';
 import { DatabaseProvider } from './../../providers/database/database';
 import { DateModel } from './../../models/date-model';
 import { DateDialog } from './date-dialog/date-dialog';
@@ -12,7 +13,7 @@ export class HomePage {
 
   public AllDates: DateModel[] = []
 
-  constructor(public navCtrl: NavController, private modalCtrl:ModalController, private databaseProvider:DatabaseProvider) {
+  constructor(public navCtrl: NavController, private modalCtrl:ModalController, private databaseProvider:DatabaseProvider, private syncProvider:SyncProvider) {
     this.LoadDates()
   }
 
@@ -29,6 +30,18 @@ export class HomePage {
       this.AllDates = data;
       console.log(data)
     })
+  }
+
+  SyncDates(){
+    this.syncProvider.DownloadDates().then(() => {
+      this.LoadDates();
+    })
+  }
+
+  UploadDates(){
+    // ToDo: Checken, ob Berechtigung vorhanden ist
+
+    this.syncProvider.UploadDates(this.AllDates);
   }
 }
 
