@@ -1,3 +1,6 @@
+import { DateScreen } from './date-screen/date-screen';
+import { RolesEnumeration } from './../../models/user-model';
+import { UserProvider } from './../../providers/user/user';
 import { SyncProvider } from './../../providers/sync/sync';
 import { DatabaseProvider } from './../../providers/database/database';
 import { DateModel } from './../../models/date-model';
@@ -13,8 +16,9 @@ export class HomePage {
 
   public AllDates: DateModel[] = []
 
-  constructor(public navCtrl: NavController, private modalCtrl:ModalController, private databaseProvider:DatabaseProvider, private syncProvider:SyncProvider) {
-    this.LoadDates()
+  constructor(public navCtrl: NavController, private modalCtrl:ModalController, private databaseProvider:DatabaseProvider, private syncProvider:SyncProvider, private userProvider: UserProvider) {
+    this.SyncDates();
+    this.LoadDates();
   }
 
   NewDate(){
@@ -42,6 +46,15 @@ export class HomePage {
     // ToDo: Checken, ob Berechtigung vorhanden ist
 
     this.syncProvider.UploadDates(this.AllDates);
+  }
+
+  UserCanAddNewDate():boolean{
+    return this.userProvider.HasPermisision(RolesEnumeration.ADDDATE);
+  }
+
+  OpenDate(date:DateModel){
+    let dateScreen = this.modalCtrl.create(DateScreen, {date});
+    dateScreen.present();
   }
 }
 

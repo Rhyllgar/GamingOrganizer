@@ -1,0 +1,37 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            Termin am: {{ theDate.TheDateHtml }}
+        </ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content text-center>
+    <ion-list>
+        <ion-item text-wrap>
+            Uhrzeit:
+            <b>{{ theDate.TheTime}} Uhr</b>
+        </ion-item>
+        <ion-item text-wrap>
+            Ort:
+            <b>{{ theDate.TheLocation}}</b>
+
+        </ion-item>
+        <ion-item text-wrap>
+            Mitspieler: {{ playersHtml }}
+
+        </ion-item>
+        <ion-item>
+            TODO: Spieleliste :)
+        </ion-item>
+    </ion-list>
+    <button round ion-button *ngIf="participates" (click)="Participate()" color="danger">
+            Absagen
+    </button>
+    <button round ion-button *ngIf="!participates" (click)="Participate()" color="secondary">
+            Teilnehmen
+    </button>
+    <button round ion-button (click)="CloseScreen()">
+        schließen
+    </button>
+</ion-content>

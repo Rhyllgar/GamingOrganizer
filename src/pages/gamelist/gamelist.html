@@ -5,14 +5,14 @@
     </button>
     <ion-title>Spieleliste</ion-title>
     <ion-buttons end>
-      <button ion-button icon-only (click)="AddGame()">
+      <button ion-button icon-only (click)="AddGame()" *ngIf="HasPermissionToAddGame()">
         <ion-icon name="add"></ion-icon>
       </button>
-      <button ion-button icon-only (click)="UploadGameData()">
-        <ion-icon name="sync"></ion-icon>
+      <button ion-button icon-only (click)="UploadGameData()" *ngIf="HasPermissionToAddGame()">
+        <ion-icon name="cloud-upload"></ion-icon>
       </button>
       <button ion-button icon-only (click)="DownloadGameData()">
-        <ion-icon name="book"></ion-icon>
+        <ion-icon name="sync"></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>

@@ -1,3 +1,5 @@
+import { DateScreen } from './../pages/home/date-screen/date-screen';
+import { UserProvider } from './../providers/user/user';
 import { DatePicker } from '@ionic-native/date-picker';
 
 import { BrowserModule } from '@angular/platform-browser';
@@ -42,7 +44,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     SigninPage,
     GamePage,
     PopoverMenu,
-    DateDialog
+    DateDialog,
+    DateScreen
   ],
   imports: [
     BrowserModule,
@@ -69,7 +72,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     SigninPage,
     GamePage,
     PopoverMenu,
-    DateDialog
+    DateDialog,
+    DateScreen
   ],
   providers: [
     StatusBar,
@@ -80,7 +84,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     SQLite,
     DatabaseProvider,
     SyncProvider,
-    DatePicker
+    DatePicker,
+    UserProvider
   ]
 })
 export class AppModule { }
