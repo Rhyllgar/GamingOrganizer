@@ -12,6 +12,7 @@ import { ListPage } from '../pages/list/list';
 import { SchedulingPage } from '../pages/scheduling/scheduling';
 import { GameListPage } from '../pages/gamelist/gamelist';
 import { GamePage } from '../pages/game/game';
+import { AddGamePage } from '../pages/add-game/add-game';
 import { PlayerProfilePage } from '../pages/playerprofile/playerprofile';
 import { SigninPage } from '../pages/signin/signin';
 import { SignupPage } from '../pages/signup/signup';

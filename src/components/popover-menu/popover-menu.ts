@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ModalController} from 'ionic-angular';
-import { GamePage } from '../../pages/game/game';
+import { AddGamePage } from '../../pages/add-game/add-game';
 
 @Component({
     template: 'popover-menu.html'
@@ -13,6 +13,6 @@ export class PopoverMenu{
     }
 
     NewGameClick(){
-        let newGameModal = this.modalController.create(GamePage);
+        let newGameModal = this.modalController.create(AddGamePage);
     }
 }
