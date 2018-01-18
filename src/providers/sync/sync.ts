@@ -1,3 +1,4 @@
+import { UserModel, RolesEnumeration } from './../../models/user-model';
 import { DateModel } from './../../models/date-model';
 import { AuthService } from './../../services/auth';
 import { GameModel } from './../../models/game-model';
@@ -32,74 +33,97 @@ export class SyncProvider {
         })
     }
 
-    public UploadGameData(games: GameModel[]): Promise<any> {
-        var database = firebase.database();
+    // public UploadGameData(games: GameModel[]): Promise<any> {
+    //     var database = firebase.database();
 
+    //     return new Promise((resolve) => {
+    //         this.storage.get("MaxGameId").then((data) => {
+    //             firebase.database().ref('single-values').set({
+    //                 MaxGameId: data
+    //             })
+    //         }).then(() => {
+    //             for (let i = 0; i < games.length; i++) {
+    //                 let gameToSave = games[i];
+    //                 firebase.database().ref('games/' + games[i].GameID).set({
+    //                     GameName: gameToSave.GameName,
+    //                     MinimumPlayers: gameToSave.MinimumPlayers,
+    //                     MaximumPlayers: gameToSave.MaximumPlayers,
+    //                     GameType: gameToSave.GameType,
+    //                     MinimumDuration: gameToSave.MinimumDuration,
+    //                     MaximumDuration: gameToSave.MaximumDuration,
+    //                     Owner: gameToSave.Owner,
+    //                     Description: gameToSave.Description,
+    //                     Image1: gameToSave.Image1,
+    //                     Image2: gameToSave.Image2,
+    //                     Image3: gameToSave.Image3,
+    //                     Image4: gameToSave.Image4,
+    //                     Image5: gameToSave.Image5,
+    //                     Deleted: gameToSave.Deleted
+    //                 });
+    //             }
+    //             resolve();
+    //         });
+    //     });
+    //     // get maxGameId 
+
+    // }
+
+    public UploadGameData(games: GameModel[]): Promise<any> {
         return new Promise((resolve) => {
-            this.storage.get("MaxGameId").then((data) => {
-                firebase.database().ref('single-values').set({
-                    MaxGameId: data
-                })
-            }).then(() => {
-                for (let i = 0; i < games.length; i++) {
-                    let gameToSave = games[i];
-                    firebase.database().ref('games/' + games[i].GameID).set({
-                        GameName: gameToSave.GameName,
-                        MinimumPlayers: gameToSave.MinimumPlayers,
-                        MaximumPlayers: gameToSave.MaximumPlayers,
-                        GameType: gameToSave.GameType,
-                        MinimumDuration: gameToSave.MinimumDuration,
-                        MaximumDuration: gameToSave.MaximumDuration,
-                        Owner: gameToSave.Owner,
-                        Description: gameToSave.Description,
-                        Image1: gameToSave.Image1,
-                        Image2: gameToSave.Image2,
-                        Image3: gameToSave.Image3,
-                        Image4: gameToSave.Image4,
-                        Image5: gameToSave.Image5,
-                        Deleted: gameToSave.Deleted
-                    });
-                }
+            firebase.database().ref('games').set(games).then(() => {
                 resolve();
             });
         });
-        // get maxGameId 
-
     }
 
     DownloadGameData(): Promise<any> {
         return new Promise((resolve) => {
-            let allGames: GameModel[] = [];
-            let database = firebase.database();
-            let maxGameId = 0;
-            // get maxGameId so we know how often we have to iterate
-            database.ref('single-values/MaxGameId').once('value').then((maxGameIdFromServer) => {
-                maxGameId = maxGameIdFromServer.val();
-
-                // now download all game data
-                database.ref('games').once('value').then((snapshot) => {
-                    let allGamesFromServer = snapshot.val();
-                    console.log(allGamesFromServer);
-                    this.gameService.ResetMaxGameId().then( async () => {
-                        for (let game of allGamesFromServer) {
-                            if (game == null) {  // the first entry is empty since gameIds start with 1, so we have to skip it
-                                continue;
-                            }
-                            let newModel: GameModel = this.MapDataToModel(game);
-                            await this.gameService.AddGame(newModel);
-                        }
-                        resolve();
-                        // for (let i = 1; i <= maxGameId; i++) {
-                        //     let newModel: GameModel = this.MapDataToModel(allGamesFromServer[i]);
-                        //     let waitHelper = await this.gameService.AddGame(newModel);
-                        // }
-                    });
-
-                });
-            });
-        });
-
+            firebase.database().ref('games').once('value').then((data) => {
+                let gamesFromServer: GameModel[] = data.val();
+                if (gamesFromServer != null) {
+                    this.gameService.EmptyLocalGameData();
+                    gamesFromServer.forEach((game) => {
+                        this.gameService.AddGame(game);
+                    })
+                }
+                resolve();
+            })
+        })
     }
+
+    // DownloadGameData(): Promise<any> {
+    //     return new Promise((resolve) => {
+    //         let allGames: GameModel[] = [];
+    //         let database = firebase.database();
+    //         let maxGameId = 0;
+    //         // get maxGameId so we know how often we have to iterate
+    //         database.ref('single-values/MaxGameId').once('value').then((maxGameIdFromServer) => {
+    //             maxGameId = maxGameIdFromServer.val();
+
+    //             // now download all game data
+    //             database.ref('games').once('value').then((snapshot) => {
+    //                 let allGamesFromServer = snapshot.val();
+    //                 console.log(allGamesFromServer);
+    //                 this.gameService.ResetMaxGameId().then(async () => {
+    //                     for (let game of allGamesFromServer) {
+    //                         if (game == null) {  // the first entry is empty since gameIds start with 1, so we have to skip it
+    //                             continue;
+    //                         }
+    //                         let newModel: GameModel = this.MapDataToModel(game);
+    //                         await this.gameService.AddGame(newModel);
+    //                     }
+    //                     resolve();
+    //                     // for (let i = 1; i <= maxGameId; i++) {
+    //                     //     let newModel: GameModel = this.MapDataToModel(allGamesFromServer[i]);
+    //                     //     let waitHelper = await this.gameService.AddGame(newModel);
+    //                     // }
+    //                 });
+
+    //             });
+    //         });
+    //     });
+
+    // }
 
     MapDataToModel(data: any) {
         let newModel = new GameModel();
@@ -126,29 +150,98 @@ export class SyncProvider {
 
     // ---------------------- DATE SYNCHRONISIERUNG -------------------------
 
-    UploadDates(dates: DateModel[]){
+    UploadDates(dates: DateModel[]) {
         new Promise((resolve) => {
             firebase.database().ref("AllDates").set(dates).then(() => {
                 resolve();
             });
-        })        
+        })
     }
 
-    DownloadDates(): Promise<any>{
+    DownloadDates(): Promise<any> {
         return new Promise((resolve) => {
             firebase.database().ref("AllDates").once('value').then((dates) => {
-                if (dates != null)
-                {
-                this.storage.set("AllDates", dates.val()).then(() => {
+                if (dates != null) {
+                    this.storage.set("AllDates", dates.val()).then(() => {
+                        resolve();
+                    });
+                }
+                else {
                     resolve();
-                });
-            }
-            else
-            {
-                resolve();
-            }
+                }
             })
         })
+    }
+
+    UpdateDate(date: DateModel, user: string, participates: boolean): Promise<any> {
+        return new Promise((resolve) => {
+            if (participates) {
+                if (date.ThePlayers === undefined) {
+                    date.ThePlayers = []
+                }
+                date.ThePlayers.push(user);
+            }
+            else {
+                date.ThePlayers.forEach((player) => {
+                    if (player == user) {
+                        let playerIndex = date.ThePlayers.indexOf(player);
+                        if (playerIndex > -1) {
+                            date.ThePlayers.splice(playerIndex, 1);
+                        }
+                    }
+                })
+            }
+            firebase.database().ref('AllDates/' + date.DateId).set(date).then(() => {
+                resolve();
+            })
+
+        })
+    }
+
+    // -------------------------- USER SYNCHRONISIERUNG ------------------------
+
+    // Die folgende Funktion wäre super, um auch den Nutzernamen unique zu machen, geht aber im Moment nicht, weil man nicht unangemeldet bei Firebase auf die Datenbank zugreifen kann.
+
+    CheckIfUserNameExists(name: string): Promise<any> {
+        let checker = name;
+        return new Promise((resolve) => {
+            firebase.database().ref("Users").once('value').then((data) => {
+                if (data != null) {
+                    let users: UserModel[] = data.val();
+                    if (users != null) {
+                        users.forEach((user) => {
+                            if (user.Name == name) {
+                                resolve(true);
+                            }
+                        })
+                    }
+                    resolve(false);
+                }
+            })
+        })
+    }
+
+    AddNewUser(email: string, name: string): Promise<any> {
+        return new Promise((resolve) => {
+            // get allUsers for users length
+            firebase.database().ref("Users/").once('value').then((data) => {
+                let userId = 0;
+                if (data.val() != null) {
+                    let users: UserModel[] = data.val();
+                    userId = users.length;
+                }
+                let newUser = new UserModel();
+                newUser.UserId = userId;
+                newUser.Email = email;
+                newUser.Name = name;
+                newUser.Role = RolesEnumeration.NORMALPLAYER;
+                firebase.database().ref('Users/' + userId + "/").set(newUser).then(() => {
+                    resolve();
+                });
+            })
+
+        })
+
     }
 
 }

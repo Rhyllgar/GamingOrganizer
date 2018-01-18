@@ -5,13 +5,13 @@
     </button>
     <ion-title>Home</ion-title>
     <ion-buttons end>
-      <button ion-button icon-only (click)="NewDate()">
+      <button ion-button icon-only (click)="NewDate()" *ngIf="UserCanAddNewDate()">  
         <ion-icon name="add"></ion-icon>
       </button>
-      <button ion-button icon-only (click)="SyncDates()">
+      <!-- <button ion-button icon-only (click)="SyncDates()" >
         <ion-icon name="sync"></ion-icon>
-      </button>
-      <button ion-button icon-only (click)="UploadDates()">
+      </button> -->
+      <button ion-button icon-only (click)="UploadDates()" *ngIf="UserCanAddNewDate()">
         <ion-icon name="cloud-upload"></ion-icon>
       </button>
     </ion-buttons>
@@ -20,20 +20,22 @@
 
 <ion-content padding>
   <ion-card *ngFor="let date of AllDates">
-    <ion-card-header>
-      <b>{{ date.TheDateHtml }} um {{ date.TheTime }}</b>
-    </ion-card-header>
-    <ion-list>
-      <button ion-item>
-        Wo: {{ date.TheLocation }}
-      </button>
-      <button ion-item>
-        Zusagen:
-      </button>
-      <button ion-item>
-        Spiele:
-      </button>
-
-    </ion-list>
+    <div (click)="OpenDate(date)">
+      <ion-card-header>
+        <b>{{ date.TheDateHtml }} um {{ date.TheTime }}</b>
+      </ion-card-header>
+      <ion-list>
+        <ion-item>
+          Wo: {{ date.TheLocation }}
+        </ion-item>
+        <ion-item>
+          Zusagen:
+        </ion-item>
+        <ion-item>
+          Spiele:
+        </ion-item>
+      </ion-list>
+    </div>
   </ion-card>
+
 </ion-content>

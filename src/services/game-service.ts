@@ -14,6 +14,8 @@ export class GameService {
         return new Promise((resolve) => {
             this.database.SaveGame(game, true).then(() => {
                 resolve();
+            }).catch((e) => {
+                console.log(e.message) 
             });
         })        
     }
@@ -39,13 +41,17 @@ export class GameService {
         })
     }
 
-    ResetMaxGameId(): Promise<any>{
-        return new Promise((resolve) => {
-            this.database.ResetMaxGameId().then(() => { 
-                resolve();
-            });
-        })
-    }
+    // ResetMaxGameId(): Promise<any>{
+    //     return new Promise((resolve) => {
+    //         this.database.ResetMaxGameId().then(() => { 
+    //             resolve();
+    //         });
+    //     })
+    // }
 
+    
+  EmptyLocalGameData(){
+    this.database.EmptyLocalGameData();
+  }
 
 }

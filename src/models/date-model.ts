@@ -8,6 +8,6 @@ export class DateModel {
     public TheLocation;
     public TheTime;
     public TheGames:GameModel[];
-    public ThePlayers:UserModel[];
+    public ThePlayers:string[];  
     public DateId;
 }

@@ -1,3 +1,4 @@
+import { UserProvider } from './../providers/user/user';
 import { AuthService } from './../services/auth';
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
@@ -11,6 +12,7 @@ import { ListPage } from '../pages/list/list';
 import { SchedulingPage } from '../pages/scheduling/scheduling';
 import { GameListPage } from '../pages/gamelist/gamelist';
 import { GamePage } from '../pages/game/game';
+import { AddGamePage } from '../pages/add-game/add-game';
 import { PlayerProfilePage } from '../pages/playerprofile/playerprofile';
 import { SigninPage } from '../pages/signin/signin';
 import { SignupPage } from '../pages/signup/signup';
@@ -29,7 +31,7 @@ export class MyApp {
   isAuthenticated = false;
 
   constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen,
-    private authService: AuthService) {
+    private authService: AuthService, private userProvider: UserProvider  ) {
     firebase.initializeApp({
       apiKey: "AIzaSyDphkCcTArygVPZAoWpmgH8-oeA0engUv4",
       authDomain: "gamingorganizer-53efc.firebaseapp.com",
@@ -47,14 +49,18 @@ export class MyApp {
       { title: 'Spieleliste', component: GameListPage, signin: false },
       { title: 'Profil', component: PlayerProfilePage, signin: false },
       { title: 'Login', component: SigninPage, signin: true }, // 5
-      { title: 'Anmelden', component: SignupPage, signin: true },
-      { title: 'dtes', component: GamePage, signin: false }
+      { title: 'Registrieren', component: SignupPage, signin: true }
     ];
 
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.isAuthenticated = true;
-        this.nav.setRoot(this.tabsPage);
+        this.userProvider.SetActiveUser(user.email).then(() => {
+          this.nav.setRoot(this.tabsPage);
+        }).catch((e) => {
+          console.log(e.message)
+        });
+        
       }
       else {
         this.isAuthenticated = false;

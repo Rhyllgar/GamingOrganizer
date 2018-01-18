@@ -1,3 +1,5 @@
+import { DateScreen } from './../pages/home/date-screen/date-screen';
+import { UserProvider } from './../providers/user/user';
 import { DatePicker } from '@ionic-native/date-picker';
 
 import { BrowserModule } from '@angular/platform-browser';
@@ -9,6 +11,7 @@ import { TabsPage } from '../pages/tabs/tabs';
 import { HomePage } from '../pages/home/home';
 import { GameListPage } from '../pages/gamelist/gamelist';
 import { GamePage } from '../pages/game/game';
+import { AddGamePage } from '../pages/add-game/add-game'
 import { ListPage } from '../pages/list/list';
 import { PlayerProfilePage } from '../pages/playerprofile/playerprofile';
 import { SchedulingPage } from '../pages/scheduling/scheduling';
@@ -41,8 +44,10 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     SignupPage,
     SigninPage,
     GamePage,
+    AddGamePage,
     PopoverMenu,
-    DateDialog
+    DateDialog,
+    DateScreen
   ],
   imports: [
     BrowserModule,
@@ -68,8 +73,10 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     SignupPage,
     SigninPage,
     GamePage,
+    AddGamePage,
     PopoverMenu,
-    DateDialog
+    DateDialog,
+    DateScreen
   ],
   providers: [
     StatusBar,
@@ -80,7 +87,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     SQLite,
     DatabaseProvider,
     SyncProvider,
-    DatePicker
+    DatePicker,
+    UserProvider
   ]
 })
 export class AppModule { }
