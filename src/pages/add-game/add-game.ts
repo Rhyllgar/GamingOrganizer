@@ -21,7 +21,7 @@ export class AddGamePage {
     GameType: string = "Versus";
 
     constructor(public navControl: NavController, public navParams: NavParams, public viewCtrl: ViewController, private alertCtrl: AlertController, private gameService: GameService) {
-        
+
         this.LoadGamesInParent = this.navParams.get("LoadGamesInParent");
         // TODO: Parameter = geöffnetes Spiel => wenn == null, neues Spiel, sonstn Spiel öffnen
 
@@ -73,22 +73,37 @@ export class AddGamePage {
         }
         else {
             let gameModel = new GameModel()
-            gameModel.GameID = 0; 
-            gameModel.GameName = form.value.GameName; 
-            gameModel.MinimumPlayers = form.value.MinimumPlayers; 
-            gameModel.MaximumPlayers = form.value.MaximumPlayers; 
-            gameModel.GameType = form.value.GameType; 
-            gameModel.MinimumDuration = form.value.MinimumDuration; 
-            gameModel.MaximumDuration = form.value.MaximumDuration; 
-            gameModel.Owner = form.value.Owner; 
-            gameModel.Image1 = form.value.Image1; 
+            gameModel.GameID = 0;
+            gameModel.GameName = form.value.GameName;
+            gameModel.MinimumPlayers = form.value.MinimumPlayers;
+            gameModel.MaximumPlayers = form.value.MaximumPlayers;
+            gameModel.GameType = form.value.GameType;
+            gameModel.MinimumDuration = form.value.MinimumDuration;
+            gameModel.MaximumDuration = form.value.MaximumDuration;
+            gameModel.Owner = form.value.Owner;
+            gameModel.Image1 = form.value.Image1;
             gameModel.Image2 = form.value.Image2;
-            gameModel.Image3 = form.value.Image3; 
-            gameModel.Image4 = form.value.Image4; 
-            gameModel.Image5 = form.value.Image5; 
+            gameModel.Image3 = form.value.Image3;
+            gameModel.Image4 = form.value.Image4;
+            gameModel.Image5 = form.value.Image5;
+            if (form.value.Image1 != "") {
+                gameModel.Image1Name = "Image1" + form.value.GameName + ".png";
+            }
+            if (form.value.Image2 != "") {
+                gameModel.Image2Name = "Image2" + form.value.GameName + ".png";
+            }
+            if (form.value.Image3 != "") {
+                gameModel.Image3Name = "Image3" + form.value.GameName + ".png";
+            }
+            if (form.value.Image4 != "") {
+                gameModel.Image4Name = "Image4" + form.value.GameName + ".png";
+            }
+            if (form.value.Image5 != "") {
+                gameModel.Image5Name = "Image5" + form.value.GameName + ".png";
+            }
             gameModel.Description = form.value.Description;
             gameModel.Deleted = false;
-            this.gameService.AddGame(gameModel);            
+            this.gameService.AddGame(gameModel);
         }
         this.LoadGamesInParent();
         form.reset();

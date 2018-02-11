@@ -1,9 +1,15 @@
+import { FileHelperProvider } from './../file-helper/file-helper';
+import { Platform } from 'ionic-angular';
+import { SystemSettingsModel, SystemSettingsProvider } from './../system-settings/system-settings';
 import { DateModel } from './../../models/date-model';
 
 import { GameModel } from './../../models/game-model';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
+import { File } from '@ionic-native/file';
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
+
 
 /*
     Kurzer Überblick:
@@ -20,12 +26,19 @@ export class DatabaseProvider {
     allGames: GameModel[] = [];
     gameIdCounter: number = 0;
     allDates: DateModel[] = [];
+    isDesktop: boolean = true;
 
-    constructor(public sqlLite: SQLite, private storage: Storage) {
-        // this.CheckMaxGameId();
+    gameImagesFilePath: string = 'GameImages/';
+    storageDirectory: string;
+
+    constructor(public sqlLite: SQLite, private storage: Storage, private file: File, private platform: Platform, private transfer: FileTransfer, private fileHelper: FileHelperProvider) {
+        if (platform.is('cordova')) {
+            this.isDesktop = false;
+            this.fileHelper.SetDirectory();
+        }
     }
 
-    // ========================== Spiele-Daten =============================
+    // ========================== Spiele-Daten ============================= 
 
 
     EmptyLocalGameData() {
@@ -37,13 +50,14 @@ export class DatabaseProvider {
             if (game != null) {
                 if (newGame) {
                     game.GameID = this.allGames.length;
-                    this.allGames.push(game);
-                    this.storage.set("games", this.allGames).then(() => {
-                        // alle Spiele nochmal laden, damit das Neue auch in der Liste ist
-                        this.LoadAllGames().then(() => {
-                            resolve();
+                    this.SaveGameImages(game).then((gameImageSaved) => {
+                        this.allGames.push(game);
+                        this.storage.set("games", this.allGames).then(() => {
+                            // alle Spiele nochmal laden, damit das Neue auch in der Liste ist
+                            this.LoadAllGames().then(() => {
+                                resolve();
+                            });
                         });
-
                     });
                 }
                 else {
@@ -56,6 +70,56 @@ export class DatabaseProvider {
         })
     }
 
+    SaveGameImages(game: GameModel): Promise<GameModel> {
+        return new Promise<GameModel>((resolve) => {
+
+            let directoryToUse = "";
+            // wenn wir am Desktop sind, müssen wir nichts tun. 
+            if (this.isDesktop) {
+                resolve(game);
+                //directoryToUse = "file://"
+            }
+            else {
+
+                // sichergehen, dass Verzeichnis existiert   -- FUNKTIONIERT NICHT, weil asynchron!
+                if (!this.fileHelper.DirectoryIsSet) {
+                    this.fileHelper.SetDirectory();
+                }
+                for (let i = 0; i < 5; i++) {
+                    // prüfen, ob Bild schon angelegt wurde = ImageName != null UND Image != null
+                    if (eval("game.Image" + i) != null && eval("game.Image" + i + "Name") != "")
+                        // prüfen, ob Bilddatei auch vorhanden ist
+                        {
+                        this.file.checkFile(this.file.externalDataDirectory, this.gameImagesFilePath + eval("game.Image" + i + "Name"))
+                            .then((result) => {
+                                let checker = eval("game.Image" + i + "Name");
+                                console.log("Datei existiert");
+                            })
+                            .catch((error) => {
+                                let checker = eval("game.Image" + i + "Name");
+                                console.log("Datei existiert nicht");
+                                // Bilddatei herunterladen
+                                let fileTransfer = this.transfer.create();
+                                fileTransfer.download(eval("game.Image" + i), this.file.externalDataDirectory + this.gameImagesFilePath + eval("game.Image" + i + "Name"), true)
+                                    .then(() => {
+                                        console.log("Download hat geklappt, hurra!");
+                                    })
+                                    .catch((error) => {
+                                        console.log("Download hat nicht geklappt. Fehler: " + error.message);
+                                    });
+                                // Bildnamen setzen
+
+                            });
+                        }
+                }
+            }
+
+            resolve(game);
+        });
+    }
+
+
+
     LoadAllGames(): Promise<any> {
         return new Promise((resolve) => {
             this.storage.get("games").then((data) => {
@@ -66,126 +130,6 @@ export class DatabaseProvider {
             })
         })
     }
-
-
-
-
-    // CheckMaxGameId(): Promise<any> {
-    //     return new Promise((resolve) => {
-    //         this.storage.get("MaxGameId").then((data) => {
-    //             if (data != null) {
-    //                 this.maxGameId = data;
-    //             }
-    //             else {
-    //                 this.maxGameId = 0;
-    //             }
-    //             resolve();
-    //         })
-    //     });
-    // }
-
-    // SaveGame(game: GameModel, isNew: boolean): Promise<any> {
-    //     return new Promise((resolve) => {
-    //         if (isNew) {
-    //             this.CheckMaxGameId().then(() => {
-    //                 this.maxGameId++;
-    //                 this.storage.set("MaxGameId", this.maxGameId).then(() => {
-    //                     this.SaveGameToDatabase(game, this.maxGameId);
-
-    //                     resolve();
-    //                 });
-    //             })
-    //         }
-    //         else {
-    //             this.LoadAllGames
-    //         }
-    //     })
-    //     // this.storage.get("Game" + this.maxGameId).then((data) => { console.log(data) });
-    // }
-
-    // SaveGameToDatabase(game: GameModel, id: number) {
-
-    //     return this.storage.set("Game" + this.maxGameId, {
-    //         GameID: this.maxGameId,
-    //         GameName: game.GameName,
-    //         MinimumPlayers: game.MinimumPlayers,
-    //         MaximumPlayers: game.MaximumPlayers,
-    //         GameType: game.GameType,
-    //         MinimumDuration: game.MinimumDuration,
-    //         MaximumDuration: game.MaximumDuration,
-    //         Owner: game.Owner,
-    //         Description: game.Description,
-    //         Image1: game.Image1,
-    //         Image2: game.Image2,
-    //         Image3: game.Image3,
-    //         Image4: game.Image4,
-    //         Image5: game.Image5,
-    //         Deleted: game.Deleted
-    //     });
-    // }
-    // async LoadAllGames() {
-    //     // this.storage.get("MaxGameId").then((data) => {
-    //     let allGames: GameModel[] = [];
-
-    //     for (let i = 1; i <= this.maxGameId; i++) {
-    //         let newModel = await this.LoadGameById(i).then((newGameModel) => {
-    //             if (newGameModel != null) {
-    //                 if (!newGameModel.Deleted) {
-    //                     allGames.push(newGameModel);
-    //                 }
-    //             }
-    //         });
-
-    //     }
-    //     return allGames;
-    //     // });
-
-    // }
-
-    // LoadGameById(id: number): Promise<any> {
-    //     return new Promise((resolve, reject) => {
-    //         this.storage.get("Game" + id).then((data) => {
-    //             let game = this.MapDataToModel(data);
-    //             resolve(game);
-    //         }).catch(e => {
-    //             reject(Error("LoadGameByID failed"));
-    //         });
-    //     });
-
-    // }
-
-    // MapDataToModel(data: any) {
-    //     let newModel = new GameModel();
-    //     if (data != null) {
-    //         newModel.GameID = data.GameID;
-    //         newModel.GameName = data.GameName;
-    //         newModel.MinimumPlayers = data.MinimumPlayers;
-    //         newModel.MaximumPlayers = data.MaximumPlayers;
-    //         newModel.GameType = data.GameType;
-    //         newModel.MinimumDuration = data.MinimumDuration;
-    //         newModel.MaximumDuration = data.MaximumDuration;
-    //         newModel.Owner = data.Owner;
-    //         newModel.Image1 = data.Image1;
-    //         newModel.Image2 = data.Image2;
-    //         newModel.Image3 = data.Image3;
-    //         newModel.Image4 = data.Image4;
-    //         newModel.Image5 = data.Image5;
-    //         newModel.Description = data.Description;
-    //         newModel.Deleted = data.Deleted;
-    //     }
-    //     return newModel;
-    // }
-
-    // ResetMaxGameId(): Promise<any> {
-    //     return new Promise((resolve) => {
-    //         this.maxGameId = 0;
-    //         this.storage.set("MaxGameId", this.maxGameId)
-    //             .then(() => {
-    //                 resolve();
-    //             });
-    //     })
-    // }
-
 
     // ============================== Termin-Daten ===================================
 
@@ -227,5 +171,20 @@ export class DatabaseProvider {
             });
         })
     }
+
+
+    // ========================== SYSTEM SETTINGS ==================================
+
+    LoadSystemSettings(): Promise<SystemSettingsModel> {
+        return new Promise<SystemSettingsModel>((resolve) => {
+            this.storage.get("SystemSettings").then((data) => {
+                resolve(data);
+            });
+        })
+    }
+
+    // =========================== FILE TRANSFER ===================================
+
+
 
 }

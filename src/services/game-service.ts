@@ -12,6 +12,7 @@ export class GameService {
 
     public AddGame(game: GameModel) :Promise<any>{
         return new Promise((resolve) => {
+            let checker = 0;
             this.database.SaveGame(game, true).then(() => {
                 resolve();
             }).catch((e) => {

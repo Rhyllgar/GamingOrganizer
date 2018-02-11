@@ -1,3 +1,6 @@
+import { FileHelperProvider } from './../providers/file-helper/file-helper';
+
+import { SystemSettingsProvider } from './../providers/system-settings/system-settings';
 import { DateScreen } from './../pages/home/date-screen/date-screen';
 import { UserProvider } from './../providers/user/user';
 import { DatePicker } from '@ionic-native/date-picker';
@@ -31,6 +34,9 @@ import { SyncProvider } from './../providers/sync/sync';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { File } from '@ionic-native/file';
+import { FileTransfer } from '@ionic-native/file-transfer';
+
 
 @NgModule({
   declarations: [
@@ -88,7 +94,11 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     DatabaseProvider,
     SyncProvider,
     DatePicker,
-    UserProvider
+    UserProvider,
+    File,
+    SystemSettingsProvider,
+    FileTransfer,
+    FileHelperProvider
   ]
 })
 export class AppModule { }

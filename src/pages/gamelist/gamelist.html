@@ -27,7 +27,8 @@
         <!-- left side: image -->
         <ion-row>
           <ion-col col-4>
-            <img [src]="game.Image1"  />
+            <img *ngIf="PlatformIsCordova()" [src]="game.Image1ImageUrl"  />
+            <img *ngIf="PlatformIsCordova() == false" [src]="game.Image1"  />
           </ion-col>
 
           <!-- left side: text -->
